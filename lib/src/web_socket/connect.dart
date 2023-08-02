@@ -1,15 +1,12 @@
-import 'dart:io';
-
-import 'package:web_socket_channel/io.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-WebSocketChannel getChannel(WebSocket socket) => IOWebSocketChannel(socket);
+WebSocketChannel getChannel(dynamic socket) =>
+    throw UnsupportedError('No implementation of the api provided.');
 
-Future<WebSocket> connect(
+Future<dynamic> connect(
   String url, {
   Iterable<String>? protocols,
   Duration? pingInterval,
   String? binaryType,
-}) async =>
-    await WebSocket.connect(url, protocols: protocols)
-      ..pingInterval = pingInterval;
+}) =>
+    throw UnsupportedError('No implementation of the api provided.');

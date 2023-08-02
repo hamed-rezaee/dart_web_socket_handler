@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:developer' as developer;
-import 'dart:io' as io;
 
+import 'package:dart_web_socket_handler/src/connection_controller/connection_controller.dart';
+import 'package:dart_web_socket_handler/src/connection_controller/connection_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import '../../web_socket_handler.dart';
-import 'connect.dart';
+import 'package:dart_web_socket_handler/web_socket_handler.dart'
+    if (dart.library.html) 'package:dart_web_socket_handler/src/web_socket/connect_html.dart'
+    if (dart.library.io) 'package:dart_web_socket_handler/src/web_socket/connect_io.dart';
 
 class WebSocket {
   WebSocket(
@@ -79,7 +81,7 @@ class WebSocket {
     }
 
     try {
-      final io.WebSocket webSocket = await connect(
+      final dynamic webSocket = await connect(
         '$uri',
         protocols: protocols,
         binaryType: binaryType,
