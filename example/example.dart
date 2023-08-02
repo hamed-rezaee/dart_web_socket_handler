@@ -8,22 +8,20 @@ void main() async {
   final Uri uri = Uri.parse('wss://ws.binaryws.com/websockets/v3?app_id=1089');
   final WebSocket socket = WebSocket(uri);
 
-  socket.connection.listen((ConnectionState state) {
-    print('state: "$state"');
+  await socket.initialize();
 
-    if (state is ConnectedState) {
-      socket.send(
-        jsonEncode(<String, dynamic>{
-          'ticks': 'R_50',
-          'subscribe': 1,
-        }),
-      );
-    }
-  });
+  socket.connection.listen((ConnectionState state) => print('state: "$state"'));
 
   socket.messages.listen((dynamic message) {
     print('message: "$message"');
   });
+
+  socket.send(
+    jsonEncode(<String, dynamic>{
+      'ticks': 'R_50',
+      'subscribe': 1,
+    }),
+  );
 
   await Future<void>.delayed(const Duration(seconds: 5));
 

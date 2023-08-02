@@ -15,9 +15,7 @@ class WebSocket {
     this.pingInterval = const Duration(seconds: 1),
     this.reconnectInterval = const Duration(seconds: 3),
     this.timeout = const Duration(seconds: 5),
-  }) {
-    _connect();
-  }
+  });
 
   final Uri uri;
   final Iterable<String>? protocols;
@@ -39,10 +37,16 @@ class WebSocket {
 
   ConnectionController get connection => _connectionController;
 
+  Future<void> initialize() async {
+    if (_channel == null) {
+      return _connect();
+    }
+  }
+
   void send(dynamic message) {
     if (_channel == null) {
       throw Exception(
-        '$runtimeType waiting for connection to be stablished...',
+        '$runtimeType is not initialized, call "initialize" method first.',
       );
     }
 
