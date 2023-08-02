@@ -42,35 +42,65 @@ void main() {
     });
 
     test('DisconnectedState equality test.', () {
-      final DisconnectedState state1 =
-          DisconnectedState(1, 'reason', 'error state 1', StackTrace.current);
-      final DisconnectedState state2 =
-          DisconnectedState(1, 'reason', 'error state 2', StackTrace.current);
+      final DisconnectedState state1 = DisconnectedState(
+        code: 1,
+        reason: 'reason',
+        error: 'error state 1',
+        stackTrace: StackTrace.current,
+      );
+      final DisconnectedState state2 = DisconnectedState(
+        code: 1,
+        reason: 'reason',
+        error: 'error state 2',
+        stackTrace: StackTrace.current,
+      );
 
       expect(state1, equals(state2));
     });
 
     test('DisconnectedState with different code and reason test.', () {
-      const DisconnectedState state1 = DisconnectedState(1, 'reason1');
-      const DisconnectedState state2 = DisconnectedState(2, 'reason2');
+      const DisconnectedState state1 = DisconnectedState(
+        code: 1,
+        reason: 'reason 1',
+      );
+      const DisconnectedState state2 = DisconnectedState(
+        code: 2,
+        reason: 'reason 2',
+      );
 
       expect(state1, isNot(equals(state2)));
     });
 
     test('DisconnectedState with null values test.', () {
-      const DisconnectedState state1 =
-          DisconnectedState(null, null, null, null);
-      const DisconnectedState state2 =
-          DisconnectedState(null, null, null, null);
+      const DisconnectedState state1 = DisconnectedState(
+        code: null,
+        reason: null,
+        error: null,
+        stackTrace: null,
+      );
+      const DisconnectedState state2 = DisconnectedState(
+        code: null,
+        reason: null,
+        error: null,
+        stackTrace: null,
+      );
 
       expect(state1, equals(state2));
     });
 
     test('DisconnectedState with different error and stackTrace test.', () {
-      final DisconnectedState state1 =
-          DisconnectedState(1, 'reason', 'error1', StackTrace.current);
-      final DisconnectedState state2 =
-          DisconnectedState(1, 'reason', 'error2', StackTrace.current);
+      final DisconnectedState state1 = DisconnectedState(
+        code: 1,
+        reason: 'reason',
+        error: 'error 1',
+        stackTrace: StackTrace.current,
+      );
+      final DisconnectedState state2 = DisconnectedState(
+        code: 1,
+        reason: 'reason',
+        error: 'error 2',
+        stackTrace: StackTrace.current,
+      );
 
       expect(state1, equals(equals(state2)));
     });

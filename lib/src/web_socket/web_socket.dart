@@ -63,7 +63,7 @@ class WebSocket {
     await _channel?.sink.close(code, reason);
 
     _connectionController
-      ..add(DisconnectedState(code, reason))
+      ..add(DisconnectedState(code: code, reason: reason))
       ..close();
 
     await _messageController.close();
@@ -115,10 +115,10 @@ class WebSocket {
 
     _connectionController.add(
       DisconnectedState(
-        _channel?.closeCode,
-        _channel?.closeReason,
-        error,
-        stackTrace,
+        code: _channel?.closeCode,
+        reason: _channel?.closeReason,
+        error: error,
+        stackTrace: stackTrace,
       ),
     );
 

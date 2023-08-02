@@ -40,12 +40,12 @@ class DisconnectingState extends ConnectionState {
 }
 
 class DisconnectedState extends ConnectionState {
-  const DisconnectedState([
+  const DisconnectedState({
     this.code,
     this.reason,
     this.error,
     this.stackTrace,
-  ]);
+  });
 
   final int? code;
   final String? reason;
