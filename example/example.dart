@@ -2,8 +2,7 @@
 
 import 'dart:convert';
 
-import 'package:dart_web_socket_handler/src/connection_controller/connection_state.dart';
-import 'package:dart_web_socket_handler/src/web_socket.dart';
+import 'package:dart_web_socket_handler/web_socket_handler.dart';
 
 void main() async {
   final Uri uri = Uri.parse('wss://ws.binaryws.com/websockets/v3?app_id=1089');
