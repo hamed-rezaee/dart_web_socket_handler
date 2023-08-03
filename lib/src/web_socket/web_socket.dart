@@ -38,12 +38,13 @@ class WebSocket {
 
   WebSocketChannel? _channel;
 
+  final List<dynamic> _messageQueue = <dynamic>[];
+
   bool _isClosedByUser = false;
   Timer? _backoffTimer;
-  Completer<void> _initializeCompleter = Completer<void>();
 
   void send(dynamic message) =>
-      _initializeCompleter.future.then((_) => _channel?.sink.add(message));
+      _isConnected() ? _channel?.sink.add(message) : _messageQueue.add(message);
 
   Future<void> close([int? code, String? reason]) async {
     final ConnectionState state = _connectionController.state;
@@ -51,8 +52,6 @@ class WebSocket {
     if (state is DisconnectedState) {
       return;
     }
-
-    _initializeCompleter = Completer<bool>();
 
     _isClosedByUser = true;
     _backoffTimer?.cancel();
@@ -96,7 +95,7 @@ class WebSocket {
         cancelOnError: true,
       );
 
-      _initializeCompleter.complete();
+      _sendQueuedMessages();
     } on Exception catch (error, stackTrace) {
       developer.log(
         'WebSocket: Failed to connect to "$uri".',
@@ -132,8 +131,6 @@ class WebSocket {
       return;
     }
 
-    _initializeCompleter = Completer<bool>();
-
     _connectionController.add(const ReconnectingState());
 
     await _connect();
@@ -167,4 +164,8 @@ class WebSocket {
 
     return state is DisconnectingState;
   }
+
+  void _sendQueuedMessages() => _messageQueue
+    ..forEach(_channel!.sink.add)
+    ..clear();
 }
