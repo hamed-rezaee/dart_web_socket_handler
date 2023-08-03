@@ -17,7 +17,9 @@ class WebSocket {
     this.pingInterval = const Duration(seconds: 1),
     this.reconnectInterval = const Duration(seconds: 3),
     this.timeout = const Duration(seconds: 5),
-  });
+  }) {
+    _connect();
+  }
 
   final Uri uri;
   final Iterable<String>? protocols;
@@ -25,6 +27,10 @@ class WebSocket {
   final Duration? pingInterval;
   final Duration reconnectInterval;
   final Duration timeout;
+
+  Stream<dynamic> get messages => _messageController.stream;
+
+  ConnectionController get connection => _connectionController;
 
   final ConnectionController _connectionController = ConnectionController();
   final StreamController<dynamic> _messageController =
@@ -34,29 +40,15 @@ class WebSocket {
 
   bool _isClosedByUser = false;
   Timer? _backoffTimer;
+  Completer<void> _initializeCompleter = Completer<void>();
 
-  Stream<dynamic> get messages => _messageController.stream;
-
-  ConnectionController get connection => _connectionController;
-
-  Future<void> initialize() async {
-    if (_channel == null) {
-      return _connect();
-    }
-  }
-
-  void send(dynamic message) {
-    if (_channel == null) {
-      throw Exception(
-        '$runtimeType is not initialized, call "initialize" method first.',
-      );
-    }
-
-    _channel?.sink.add(message);
-  }
+  void send(dynamic message) =>
+      _initializeCompleter.future.then((_) => _channel?.sink.add(message));
 
   Future<void> close([int? code, String? reason]) async {
     final ConnectionState state = _connectionController.state;
+
+    _initializeCompleter = Completer<bool>();
 
     if (state is DisconnectedState) {
       return;
@@ -103,6 +95,8 @@ class WebSocket {
         onDone: _attemptToReconnect,
         cancelOnError: true,
       );
+
+      _initializeCompleter.complete();
     } on Exception catch (error, stackTrace) {
       developer.log(
         'WebSocket: Failed to connect to "$uri".',
@@ -137,6 +131,8 @@ class WebSocket {
     if (_isClosedByUser || _isConnected()) {
       return;
     }
+
+    _initializeCompleter = Completer<bool>();
 
     _connectionController.add(const ReconnectingState());
 
