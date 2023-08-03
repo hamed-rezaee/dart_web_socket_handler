@@ -48,11 +48,11 @@ class WebSocket {
   Future<void> close([int? code, String? reason]) async {
     final ConnectionState state = _connectionController.state;
 
-    _initializeCompleter = Completer<bool>();
-
     if (state is DisconnectedState) {
       return;
     }
+
+    _initializeCompleter = Completer<bool>();
 
     _isClosedByUser = true;
     _backoffTimer?.cancel();
