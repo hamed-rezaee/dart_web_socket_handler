@@ -186,6 +186,35 @@ void main() {
     });
 
     group('messages =>', () {
+      test('emits messages when connection is open.', () async {
+        server = await createWebSocketServer(
+          onConnection: (WebSocketChannel channel) {
+            channel.sink
+              ..add('ping')
+              ..add('pong');
+          },
+        );
+
+        final List<dynamic> messages = <dynamic>[];
+        final WebSocket socket = WebSocket(
+          Uri.parse('ws://localhost:${server!.port}'),
+        )..messages.listen(messages.add);
+
+        await expectLater(
+          socket.connection,
+          emitsInOrder(<ConnectionState>[
+            const ConnectingState(),
+            const ConnectedState(),
+          ]),
+        );
+
+        await Future<void>.delayed(Duration.zero);
+
+        expect(messages, equals(<String>['ping', 'pong']));
+
+        await socket.close();
+      });
+
       test('emits nothing when connection is closed.', () async {
         final List<dynamic> messages = <dynamic>[];
         final WebSocket socket = WebSocket(uri)..messages.listen(messages.add);
