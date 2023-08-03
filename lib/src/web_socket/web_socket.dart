@@ -1,13 +1,13 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
-import 'package:dart_web_socket_handler/src/connection_controller/connection_controller.dart';
-import 'package:dart_web_socket_handler/src/connection_controller/connection_state.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-import 'package:dart_web_socket_handler/web_socket_handler.dart'
-    if (dart.library.html) 'package:dart_web_socket_handler/src/web_socket/connect_html.dart'
-    if (dart.library.io) 'package:dart_web_socket_handler/src/web_socket/connect_io.dart';
+import 'package:dart_web_socket_handler/src/connection_controller/connection_controller.dart';
+import 'package:dart_web_socket_handler/src/web_socket/connection.dart'
+    if (dart.library.html) 'package:dart_web_socket_handler/src/web_socket/connection_html.dart'
+    if (dart.library.io) 'package:dart_web_socket_handler/src/web_socket/connection_io.dart';
+import 'package:dart_web_socket_handler/web_socket_handler.dart';
 
 class WebSocket {
   WebSocket(
