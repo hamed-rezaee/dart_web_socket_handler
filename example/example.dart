@@ -13,7 +13,7 @@ void main() async {
 
   socket.send(jsonEncode(<String, dynamic>{'ticks': 'R_50', 'subscribe': 1}));
 
-  await Future<void>.delayed(const Duration(seconds: 10));
+  await Future<void>.delayed(const Duration(seconds: 60));
 
   await socket.close();
 }
