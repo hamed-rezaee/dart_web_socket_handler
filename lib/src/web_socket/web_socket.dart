@@ -9,7 +9,9 @@ import 'package:dart_web_socket_handler/src/web_socket/connection.dart'
     if (dart.library.io) 'package:dart_web_socket_handler/src/web_socket/connection_io.dart';
 import 'package:dart_web_socket_handler/web_socket_handler.dart';
 
+/// A wrapper around [WebSocketChannel] that handles connection state.
 class WebSocket {
+  /// Initializes [WebSocket].
   WebSocket(
     this.uri, {
     this.protocols,
@@ -21,15 +23,28 @@ class WebSocket {
     _connect();
   }
 
+  /// The URI to which to connect.
   final Uri uri;
+
+  /// The protocols to request.
   final Iterable<String>? protocols;
+
+  /// The type of binary messages.
   final String? binaryType;
+
+  /// The interval at which to send ping signals.
   final Duration? pingInterval;
+
+  /// The interval at which to attempt to reconnect.
   final Duration reconnectInterval;
+
+  /// The timeout for connection.
   final Duration timeout;
 
+  /// An stream of messages that are received from the server.
   Stream<dynamic> get messages => _messageController.stream;
 
+  /// An stream of connection state changes.
   ConnectionController get connection => _connectionController;
 
   final ConnectionController _connectionController = ConnectionController();
@@ -43,9 +58,11 @@ class WebSocket {
   bool _isClosedByUser = false;
   Timer? _backoffTimer;
 
+  /// Sends [message] to the server.
   void send(dynamic message) =>
       _isConnected() ? _channel?.sink.add(message) : _messageQueue.add(message);
 
+  /// Closes the connection.
   Future<void> close([int? code, String? reason]) async {
     final ConnectionState state = _connectionController.state;
 

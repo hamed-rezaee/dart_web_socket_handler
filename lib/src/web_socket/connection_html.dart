@@ -4,8 +4,10 @@ import 'dart:html';
 import 'package:web_socket_channel/html.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
+/// Returns a [WebSocketChannel] from [socket].
 WebSocketChannel getChannel(WebSocket socket) => HtmlWebSocketChannel(socket);
 
+/// Returns a [Future] that completes with a [WebSocket] connected to [url].
 Future<WebSocket> connect(
   String url, {
   Iterable<String>? protocols,

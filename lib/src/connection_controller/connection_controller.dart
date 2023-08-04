@@ -3,7 +3,9 @@ import 'dart:async';
 import 'base_connection_controller.dart';
 import 'connection_state.dart';
 
+/// Manages the connection state and notifies listeners when the state changes.
 class ConnectionController extends BaseConnectionController {
+  /// Initializes [ConnectionController].
   ConnectionController()
       : _state = const ConnectingState(),
         _controller = StreamController<ConnectionState>.broadcast() {
@@ -35,10 +37,12 @@ class ConnectionController extends BaseConnectionController {
     yield* _controller.stream;
   }
 
+  /// Sets the connection state to [state] and notifies listeners.
   void add(ConnectionState state) {
     _state = state;
     _controller.add(state);
   }
 
+  /// Closes [ConnectionController] and releases resources.
   void close() => _controller.close();
 }
