@@ -1,23 +1,26 @@
 import 'dart:async';
 import 'dart:developer' as developer;
 
+import 'package:dart_web_socket_handler/src/web_socket/io_web_socket_connection.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 import 'package:dart_web_socket_handler/src/connection_controller/connection_controller.dart';
-import 'package:dart_web_socket_handler/src/web_socket/connection.dart'
-    if (dart.library.html) 'package:dart_web_socket_handler/src/web_socket/connection_html.dart'
-    if (dart.library.io) 'package:dart_web_socket_handler/src/web_socket/connection_io.dart';
+import 'package:dart_web_socket_handler/src/web_socket/base_web_socket_connection.dart';
 import 'package:dart_web_socket_handler/web_socket_handler.dart';
 
 class WebSocket {
   WebSocket(
     this.uri, {
+    BaseWebSocketConnection? baseWebSocketConnection,
     this.protocols,
     this.binaryType,
     this.pingInterval = const Duration(seconds: 1),
     this.reconnectInterval = const Duration(seconds: 3),
     this.timeout = const Duration(seconds: 5),
   }) {
+    _baseWebSocketConnection =
+        baseWebSocketConnection ?? IOWebSocketConnection();
+
     _connect();
   }
 
@@ -27,6 +30,7 @@ class WebSocket {
   final Duration? pingInterval;
   final Duration reconnectInterval;
   final Duration timeout;
+  late BaseWebSocketConnection _baseWebSocketConnection;
 
   Stream<dynamic> get messages => _messageController.stream;
 
@@ -72,12 +76,14 @@ class WebSocket {
     }
 
     try {
-      final dynamic webSocket = await connect(
-        '$uri',
-        protocols: protocols,
-        binaryType: binaryType,
-        pingInterval: pingInterval,
-      ).timeout(timeout);
+      final dynamic webSocket = await _baseWebSocketConnection
+          .connect(
+            '$uri',
+            protocols: protocols,
+            binaryType: binaryType,
+            pingInterval: pingInterval,
+          )
+          .timeout(timeout);
 
       final ConnectionState connectionState = _connectionController.state;
 
@@ -87,10 +93,14 @@ class WebSocket {
         _connectionController.add(const ConnectedState());
       }
 
-      _channel = getChannel(webSocket);
+      _channel = _baseWebSocketConnection.getChannel(webSocket);
 
       _channel!.stream.listen(
-        _messageController.add,
+        (dynamic message) {
+          if (!_messageController.isClosed) {
+            _messageController.add(message);
+          }
+        },
         onDone: _attemptToReconnect,
         cancelOnError: true,
       );
@@ -98,7 +108,7 @@ class WebSocket {
       _sendQueuedMessages();
     } on Exception catch (error, stackTrace) {
       developer.log(
-        'WebSocket: Failed to connect to "$uri".',
+        '$runtimeType: Failed to connect to "$uri".',
         error: error,
         stackTrace: stackTrace,
       );
@@ -148,9 +158,7 @@ class WebSocket {
   bool _isConnected() {
     final ConnectionState state = _connectionController.state;
 
-    return state is ConnectedState ||
-        state is ReconnectedState ||
-        state is DisconnectingState;
+    return state is ConnectedState || state is ReconnectedState;
   }
 
   bool _isReconnecting() {
