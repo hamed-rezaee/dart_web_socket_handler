@@ -42,6 +42,7 @@ void main() async {
 - `Connection State Tracking`: The ConnectionController allows you to easily track the state of the WebSocket connection and handle state changes accordingly.
 - `Automatic Reconnections`: The WebSocket class handles automatic reconnections in case of disconnection, ensuring a more robust WebSocket experience.
 - `Web and IO Support`: The package provides implementations for both web and IO platforms.
+- `Queue Requests`: The WebSocket class queues requests while the WebSocket connection is not open and sends them once the connection is open.
 
 ### Issue Solved
 
